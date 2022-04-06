@@ -16,10 +16,11 @@ import (
 const monitoramento = 3
 const delay = 5
 
+var fileName, logsPath = pegaArgs()
+
 func main() {
-	pegaArgs()
+
 	exibeIntrodução()
-	leSitesDoArquivo()
 
 	for {
 		exibeMenu()
@@ -28,6 +29,7 @@ func main() {
 		switch comando {
 		case 1:
 			iniciarMonitoramento()
+
 		case 2:
 			fmt.Println("Exibindo logs...")
 			imprimeLogs()
@@ -43,7 +45,7 @@ func main() {
 
 func exibeIntrodução() {
 
-	nome := "Douglas"
+	nome := "Arielson"
 	versao := 1.1
 
 	fmt.Println("Olá, sr.", nome)
@@ -70,7 +72,7 @@ func iniciarMonitoramento() {
 
 	fmt.Println("Monitorando...")
 
-	sites := leSitesDoArquivo()
+	sites := leSitesDoArquivo(fileName)
 
 	for i := 0; i < monitoramento; i++ {
 
@@ -98,11 +100,10 @@ func testaSite(site string) {
 	}
 }
 
-func leSitesDoArquivo() []string {
-
+func leSitesDoArquivo(fileName string) []string {
 	var sites []string
 
-	arquivo, err := os.Open("sites.txt")
+	arquivo, err := os.Open(fileName)
 
 	if err != nil {
 		fmt.Println("Ocorreu um erro ao abrir o arquivo:", err)
@@ -127,10 +128,10 @@ func leSitesDoArquivo() []string {
 
 func registraLogs(site string, status bool) {
 
-	arquivo, err := os.OpenFile("logs.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	arquivo, err := os.OpenFile(logsPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	if err != nil {
-		fmt.Println("Ocorreu um erro ao abrir o arquivo:", err)
+		msgError(err)
 	}
 
 	arquivo.WriteString(time.Now().Format("01/02/2006 15:04:05") + " - " + site + " - online: " + strconv.FormatBool(status) + "\n")
@@ -139,29 +140,24 @@ func registraLogs(site string, status bool) {
 
 func imprimeLogs() {
 
-	arquivo, err := ioutil.ReadFile("logs.txt")
+	arquivo, err := ioutil.ReadFile(logsPath)
 
 	if err != nil {
-		fmt.Println("Ocorreu um erro ao abrir o arquivo:", err)
+		msgError(err)
 	}
 
 	fmt.Println(string(arquivo))
 }
 
-func pegaArgs() {
-	wordPtr := flag.String("word", "foo", "a string")
-
-	numbPtr := flag.Int("numb", 42, "an int")
-	forkPtr := flag.Bool("fork", false, "a bool")
-
-	var svar string
-	flag.StringVar(&svar, "svar", "bar", "a string var")
+func msgError(err error) {
+	fmt.Println("Ocorreu um erro ao abrir o arquivo:", err)
+	os.Exit(-1)
+}
+func pegaArgs() (string, string) {
+	fileName := flag.String("file", "sites.txt", "Arquivo de sites")
+	logsPath := flag.String("logs", "logs.txt", "Arquivo de logs")
 
 	flag.Parse()
 
-	fmt.Println("word:", *wordPtr)
-	fmt.Println("numb:", *numbPtr)
-	fmt.Println("fork:", *forkPtr)
-	fmt.Println("svar:", svar)
-	fmt.Println("tail:", flag.Args())
+	return *fileName, *logsPath
 }
