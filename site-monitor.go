@@ -110,6 +110,7 @@ func leSitesDoArquivo(fileName string) []string {
 	}
 
 	leitor := bufio.NewReader(arquivo)
+
 	for {
 		linha, err := leitor.ReadString('\n')
 		linha = strings.TrimSpace(linha)
@@ -150,10 +151,13 @@ func imprimeLogs() {
 }
 
 func msgError(err error) {
+
 	fmt.Println("Ocorreu um erro ao abrir o arquivo:", err)
 	os.Exit(-1)
 }
+
 func pegaArgs() (string, string) {
+
 	fileName := flag.String("file", "sites.txt", "Arquivo de sites")
 	logsPath := flag.String("logs", "logs.txt", "Arquivo de logs")
 
