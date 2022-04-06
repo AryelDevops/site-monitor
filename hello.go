@@ -20,7 +20,7 @@ var fileName, logsPath = pegaArgs()
 
 func main() {
 
-	exibeIntrodução()
+	exibeIntroducao()
 
 	for {
 		exibeMenu()
@@ -43,7 +43,7 @@ func main() {
 	}
 }
 
-func exibeIntrodução() {
+func exibeIntroducao() {
 
 	nome := "Arielson"
 	versao := 1.1
